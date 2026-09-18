@@ -1,0 +1,28 @@
+# ROLEX AI — Core requirements (all optional; core runs on stdlib alone)
+# The local-first core works with ZERO third-party dependencies.
+
+# --- GUI (Android + PC) ---
+kivy>=2.2.0
+
+# --- Document intelligence (optional) ---
+pypdf>=4.0.0
+python-docx>=1.1.0
+openpyxl>=3.1.0
+python-pptx>=0.6.23
+
+# --- Voice (optional) ---
+SpeechRecognition>=3.10.0
+pyttsx3>=2.90
+# pvporcupine>=3.0.0        # wake word (needs Picovoice access key)
+# openwakeword>=0.6.0       # open wake word alternative
+
+# --- Vision (optional) ---
+Pillow>=10.0.0
+pytesseract>=0.3.10
+# pyzbar>=0.1.9             # QR/barcode
+
+# --- Security (optional) ---
+cryptography>=42.0.0
+
+# --- Android platform APIs (optional) ---
+# plyer>=2.1.0

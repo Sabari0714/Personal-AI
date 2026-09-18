@@ -1,0 +1,20 @@
+# ROLEX AI — gitignore
+.env
+*.db
+*.db-wal
+*.db-shm
+data/*.db
+data/backups/
+logs/
+build/
+dist/
+bin/
+*.pyc
+__pycache__/
+*.pyo
+.venv/
+venv/
+.kivy/
+*.apk
+*.aab
+.rolex_secrets

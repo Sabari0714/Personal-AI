@@ -1,0 +1,23 @@
+"""ROLEX AI — modules package."""
+__all__ = [
+    "logger",
+    "memory",
+    "math_engine",
+    "tasks",
+    "planner",
+    "documents",
+    "knowledge",
+    "providers",
+    "parallel_ai",
+    "verification",
+    "web",
+    "voice",
+    "security",
+    "policy",
+    "automation",
+    "diagnostics",
+    "package_check",
+    "plugins",
+    "sync",
+    "vision",
+]
