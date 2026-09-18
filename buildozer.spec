@@ -26,6 +26,12 @@ android.minapi = 23
 android.ndk_api = 23
 android.archs = arm64-v8a
 
+# Pin python-for-android to a stable release (avoids Python 3.14 / NDK r28
+# build regressions present in the default 'develop' branch).
+p4a.branch = v2024.01.21
+# Known-good NDK for p4a v2024.01.21
+android.ndk = 25b
+
 # Permissions
 android.permissions = INTERNET,RECORD_AUDIO,ACCESS_NETWORK_STATE,ACCESS_WIFI_STATE,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,VIBRATE,WAKE_LOCK
 
