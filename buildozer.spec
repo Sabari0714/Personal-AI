@@ -48,6 +48,9 @@ log_level = 2
 # Icon (512x512 png at assets/icon.png)
 icon.filename = %(source.dir)s/assets/icon.png
 
+# Presplash (boot screen image)
+presplash.filename = %(source.dir)s/assets/presplash.png
+
 [buildozer]
 log_level = 2
 warn_on_root = 0

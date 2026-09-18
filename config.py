@@ -159,3 +159,49 @@ class RolexConfig:
 
 
 CONFIG = RolexConfig()
+
+
+# ---------------------------------------------------------------------------
+# Apply user-saved settings (data/settings.json) over the environment defaults.
+# This lets the in-app Settings screen persist API keys without editing .env.
+# ---------------------------------------------------------------------------
+def _apply_saved_settings() -> None:
+    import json
+    path = DATA_DIR / "settings.json"
+    if not path.exists():
+        return
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return
+    if not isinstance(data, dict):
+        return
+    mapping = {
+        "OPENAI_API_KEY": "openai_api_key",
+        "OPENAI_MODEL": "openai_model",
+        "OPENAI_BASE_URL": "openai_base_url",
+        "GEMINI_API_KEY": "gemini_api_key",
+        "GEMINI_MODEL": "gemini_model",
+        "GEMINI_BASE_URL": "gemini_base_url",
+        "OLLAMA_BASE_URL": "ollama_base_url",
+        "OLLAMA_MODEL": "ollama_model",
+        "HUGGINGFACE_API_KEY": "huggingface_api_key",
+        "HUGGINGFACE_MODEL": "huggingface_model",
+        "ELEVENLABS_API_KEY": "elevenlabs_api_key",
+        "ELEVENLABS_VOICE_ID": "elevenlabs_voice_id",
+        "PICOVOICE_ACCESS_KEY": "picovoice_access_key",
+        "OPENWEATHER_API_KEY": "openweather_api_key",
+        "DEFAULT_LOCATION": "default_location",
+        "WAKE_WORD": "wake_word",
+        "ROLEX_SECRET_KEY": "secret_key",
+    }
+    for env_key, attr in mapping.items():
+        val = data.get(env_key)
+        if val:
+            try:
+                setattr(CONFIG, attr, str(val))
+            except Exception:
+                pass
+
+
+_apply_saved_settings()
