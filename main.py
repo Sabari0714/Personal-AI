@@ -75,6 +75,20 @@ def run_voice() -> int:
     return 0
 
 
+def _is_android() -> bool:
+    """Detect whether we are running inside the Android APK."""
+    import os
+    if "ANDROID_ARGUMENT" in os.environ or "ANDROID_PRIVATE" in os.environ:
+        return True
+    if "ANDROID_ROOT" in os.environ and "ANDROID_DATA" in os.environ:
+        return True
+    try:
+        import android  # noqa: F401  (python-for-android provides this)
+        return True
+    except Exception:
+        return False
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="ROLEX AI")
     parser.add_argument("--status", action="store_true", help="Show system status")
@@ -84,6 +98,10 @@ def main(argv=None) -> int:
     parser.add_argument("--gui", action="store_true", help="Launch the GUI")
     parser.add_argument("--ask", type=str, help="Process a single message and exit")
     args = parser.parse_args(argv)
+
+    # On Android there is no terminal: always launch the GUI.
+    if _is_android() and not (args.status or args.diag or args.packages or args.ask):
+        args.gui = True
 
     if args.gui:
         try:
