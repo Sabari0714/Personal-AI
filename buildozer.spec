@@ -39,7 +39,7 @@ android.allow_backup = True
 android.accept_sdk_license = True
 
 # App metadata
-android.apptheme = "@android:style/Theme.NoTitleBar"
+android.apptheme = @android:style/Theme.NoTitleBar
 android.presplash_color = #0B0E14
 
 # Logging
