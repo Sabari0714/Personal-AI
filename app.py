@@ -26,6 +26,23 @@ from modules.sync import get_sync
 from modules.voice import get_voice
 from modules.vision import get_vision
 from modules.package_check import summary as pkg_summary
+from modules.finance import get_finance
+from modules.health import get_health
+from modules.device import get_device
+from modules.smarthome import get_smarthome
+from modules.messaging import get_messaging
+from modules.coding import get_coding
+from modules.computer_knowledge import get_computer_knowledge
+from modules.emergency import get_emergency
+from modules.recovery import get_recovery
+from modules.self_tests import get_self_tests
+from modules.knowledge_graph import get_knowledge_graph
+from modules.self_learning import get_self_learning
+from modules.tool_manager import get_tool_manager
+from modules.package_manager import get_package_manager
+from modules.remote_lab import get_remote_lab
+from modules.parallel_ai import get_parallel_ai
+from modules.biometrics import get_biometrics
 from brain import get_brain
 from router import get_router
 
@@ -68,10 +85,50 @@ class RolexApp:
         self.sync = get_sync()
         self.voice = get_voice()
         self.vision = get_vision()
+        self.finance = get_finance()
+        self.health = get_health()
+        self.device = get_device()
+        self.smarthome = get_smarthome()
+        self.messaging = get_messaging()
+        self.coding = get_coding()
+        self.computer = get_computer_knowledge()
+        self.emergency = get_emergency()
+        self.recovery = get_recovery()
+        self.self_tests = get_self_tests()
+        self.kg = get_knowledge_graph()
+        self.learning = get_self_learning()
+        self.tools = get_tool_manager()
+        self.packages = get_package_manager()
+        self.remote_lab = get_remote_lab()
+        self.parallel_ai = get_parallel_ai()
+        self.biometrics = get_biometrics()
         self.brain = get_brain()
         self.router = get_router()
         self._register_automation_actions()
+        self._register_tools()
         self.security.audit("app_start", detail=f"v{CONFIG.version}")
+
+    def _register_tools(self) -> None:
+        """Expose core capabilities through the tool manager."""
+        try:
+            self.tools.register("calculate", "math", "Solve a math expression",
+                                lambda expr: self.router.route(f"calculate {expr}").text)
+            self.tools.register("remember", "memory", "Store a memory",
+                                lambda text: self.memory.remember(text).to_dict())
+            self.tools.register("web_search", "web", "Search the web",
+                                lambda q: self.web.search(q))
+            self.tools.register("finance_sip", "finance", "SIP future value",
+                                lambda a, r, y: self.finance and __import__("modules.finance", fromlist=["sip"]).sip(a, r, y))
+            self.tools.register("health_bmi", "health", "Compute BMI",
+                                lambda w, h: self.health.bmi(w, h))
+            self.tools.register("device_info", "device", "Device information",
+                                lambda: self.device.info())
+            self.tools.register("self_test", "system", "Run self-tests",
+                                lambda: self.self_tests.run_all())
+            self.tools.register("snapshot", "recovery", "Create a recovery snapshot",
+                                lambda: self.recovery.snapshot())
+        except Exception as e:
+            log.debug("Tool registration issue: %s", e)
 
     def _register_automation_actions(self) -> None:
         self.automation.register_action("notify", lambda payload: log.info("Reminder: %s", payload))
@@ -164,8 +221,15 @@ class RolexApp:
             "memory_count": self.memory.count(),
             "task_stats": self.tasks.stats(),
             "knowledge_count": self.knowledge.count(),
-            "voice": {"stt": self.voice.stt_available(), "tts": self.voice.tts_available()},
+            "voice": {"stt": self.voice.stt_available(), "tts": self.voice.tts_available(),
+                      "backend": self.voice.backend_name()},
             "vision_ocr": self.vision.ocr_available(),
+            "vision_camera": self.vision.camera_available(),
+            "emergency": self.emergency.is_engaged(),
+            "biometrics": self.biometrics.biometric_available(),
+            "tools": len(self.tools.all()),
+            "kg_nodes": self.kg.stats().get("nodes", 0),
+            "remote_lab": self.remote_lab.is_running(),
         }
 
     def diagnostics_report(self) -> Dict:

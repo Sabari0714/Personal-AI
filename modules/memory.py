@@ -6,8 +6,9 @@ Memory remains under user control.
 from __future__ import annotations
 
 import time
+from collections import deque
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Deque, List, Optional, Tuple
 
 from data.database import get_db
 from modules.logger import get_logger
@@ -42,6 +43,51 @@ class MemoryItem:
 class MemoryManager:
     def __init__(self):
         self.db = get_db()
+        # Short-term (working) memory: recent turns, in-process only.
+        self._short_term: Deque[Tuple[str, str, float]] = deque(maxlen=40)
+
+    # -- short-term (working) memory ---------------------------------------
+    def add_turn(self, role: str, content: str) -> None:
+        """Record a recent conversation turn in short-term memory."""
+        self._short_term.append((role, (content or "").strip(), time.time()))
+
+    def short_term(self, limit: int = 10) -> List[Tuple[str, str, float]]:
+        return list(self._short_term)[-limit:]
+
+    def short_term_block(self, limit: int = 8) -> str:
+        turns = self.short_term(limit)
+        if not turns:
+            return ""
+        lines = [f"{role}: {content}" for role, content, _t in turns]
+        return "Recent conversation:\n" + "\n".join(lines)
+
+    def clear_short_term(self) -> None:
+        self._short_term.clear()
+
+    # -- long-term consolidation -------------------------------------------
+    def consolidate(self) -> int:
+        """Promote important short-term turns into long-term memory.
+
+        Heuristic: turns that contain durable cues (preferences, instructions,
+        facts) are saved. Returns the number of items promoted.
+        """
+        cues = ("i prefer", "i like", "i always", "i never", "remember",
+                "my name is", "call me", "istam", "enoda", "always use",
+                "don't forget", "important")
+        promoted = 0
+        for role, content, _t in list(self._short_term):
+            if role != "user" or len(content) < 8:
+                continue
+            low = content.lower()
+            if any(c in low for c in cues):
+                try:
+                    self.remember(content, category="context", importance=2)
+                    promoted += 1
+                except Exception:
+                    pass
+        if promoted:
+            log.info("Consolidated %d short-term turn(s) into long-term memory.", promoted)
+        return promoted
 
     # -- write --------------------------------------------------------------
     def remember(self, content: str, category: str = "general",
@@ -119,12 +165,16 @@ class MemoryManager:
         return [self._row_to_item(r) for r in rows]
 
     def context_block(self, limit: int = 12) -> str:
-        """Return a compact memory block for prompt context."""
+        """Return a compact memory block for prompt context (long + short term)."""
+        parts = []
+        short = self.short_term_block(limit=6)
+        if short:
+            parts.append(short)
         items = self.all(limit=limit)
-        if not items:
-            return ""
-        lines = [f"- [{m.category}] {m.content}" for m in items]
-        return "Known user memory:\n" + "\n".join(lines)
+        if items:
+            lines = [f"- [{m.category}] {m.content}" for m in items]
+            parts.append("Known user memory:\n" + "\n".join(lines))
+        return "\n\n".join(parts)
 
     def count(self) -> int:
         row = self.db.query_one("SELECT COUNT(*) AS c FROM memory")

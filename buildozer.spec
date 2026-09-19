@@ -17,6 +17,9 @@ requirements = python3,kivy,pyjnius,android,plyer,requests,urllib3,chardet,idna,
 # Optional heavy deps (enable only if needed and validated):
 # requirements = python3,kivy,pyjnius,android,plyer,pillow,openpyxl,pypdf
 
+# Android services / features
+android.features = android.hardware.camera,android.hardware.camera.autofocus,android.hardware.microphone,android.hardware.fingerprint,android.hardware.bluetooth,android.hardware.location
+
 orientation = portrait
 fullscreen = 0
 
@@ -33,7 +36,7 @@ p4a.branch = v2024.01.21
 android.ndk = 25b
 
 # Permissions
-android.permissions = INTERNET,RECORD_AUDIO,ACCESS_NETWORK_STATE,ACCESS_WIFI_STATE,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,VIBRATE,WAKE_LOCK
+android.permissions = INTERNET,RECORD_AUDIO,ACCESS_NETWORK_STATE,ACCESS_WIFI_STATE,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,VIBRATE,WAKE_LOCK,CAMERA,USE_BIOMETRIC,USE_FINGERPRINT,FOREGROUND_SERVICE,POST_NOTIFICATIONS,READ_MEDIA_IMAGES,READ_MEDIA_AUDIO,READ_MEDIA_VIDEO,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,BLUETOOTH,BLUETOOTH_CONNECT,BLUETOOTH_SCAN,QUERY_ALL_PACKAGES
 
 android.allow_backup = True
 android.accept_sdk_license = True

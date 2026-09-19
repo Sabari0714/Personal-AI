@@ -19,6 +19,7 @@ pyttsx3>=2.90
 # --- Vision (optional) ---
 Pillow>=10.0.0
 pytesseract>=0.3.10
+# opencv-python>=4.8.0     # desktop camera capture
 # pyzbar>=0.1.9             # QR/barcode
 
 # --- Security (optional) ---
@@ -26,3 +27,6 @@ cryptography>=42.0.0
 
 # --- Android platform APIs (optional) ---
 # plyer>=2.1.0
+
+# --- Smart-home / IoT (optional) ---
+# paho-mqtt>=2.0.0          # MQTT smart-home driver

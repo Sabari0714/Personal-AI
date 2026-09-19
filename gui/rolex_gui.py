@@ -52,6 +52,13 @@ except Exception as e:  # pragma: no cover
 
 from gui.theme import COLORS, BG_GRADIENT_TOP, BG_GRADIENT_BOT
 
+try:
+    from gui.optimus import OptimusHero, create_optimus_hero
+    OPTIMUS_AVAILABLE = True
+except Exception as _e:  # pragma: no cover
+    OPTIMUS_AVAILABLE = False
+    log.warning("Optimus widget unavailable: %s", _e)
+
 
 if KIVY_AVAILABLE:
 
@@ -269,6 +276,16 @@ if KIVY_AVAILABLE:
             self.sub.bind(size=lambda *_: setattr(self.sub, "text_size", self.sub.size))
             root.add_widget(self.sub)
 
+            # Optimus Prime hero (voice-synced glowing eyes)
+            if OPTIMUS_AVAILABLE:
+                self.optimus = create_optimus_hero()
+                if self.optimus is not None:
+                    self.optimus.size_hint_y = None
+                    self.optimus.height = dp(180)
+                    root.add_widget(self.optimus)
+            else:
+                self.optimus = None
+
             # Status cards grid
             grid = GridLayout(cols=2, spacing=dp(10), size_hint_y=None, height=dp(190))
             self.card_providers = self._stat_card("Providers", "0/7", COLORS["cyan"])
@@ -286,10 +303,10 @@ if KIVY_AVAILABLE:
             root.add_widget(qa)
 
             actions = GridLayout(cols=2, spacing=dp(10), size_hint_y=None, height=dp(120))
-            actions.add_widget(self._action("💬  Chat", "chat", COLORS["cyan"]))
-            actions.add_widget(self._action("🎙  Voice", "voice", COLORS["gold"]))
-            actions.add_widget(self._action("⚙  Settings", "settings", COLORS["violet"]))
-            actions.add_widget(self._action("🖥  System", "system", COLORS["success"]))
+            actions.add_widget(self._action("Chat", "chat", COLORS["cyan"]))
+            actions.add_widget(self._action("Voice", "voice", COLORS["gold"]))
+            actions.add_widget(self._action("Settings", "settings", COLORS["violet"]))
+            actions.add_widget(self._action("System", "system", COLORS["success"]))
             root.add_widget(actions)
 
             root.add_widget(Widget())
@@ -412,7 +429,7 @@ if KIVY_AVAILABLE:
                 font_size="14sp", color=COLORS["text_dim"],
             )
             root.add_widget(self.voice_transcript)
-            listen_btn = GlowButton(text="🎙  Listen", accent=COLORS["cyan"],
+            listen_btn = GlowButton(text="Listen", accent=COLORS["cyan"],
                                     size_hint_y=None, height=dp(60), font_size="18sp")
             listen_btn.bind(on_release=self._listen)
             root.add_widget(listen_btn)
@@ -546,9 +563,9 @@ if KIVY_AVAILABLE:
             outer.add_widget(scroll)
 
             btn_row = BoxLayout(size_hint_y=None, height=dp(52), spacing=dp(8))
-            save = GlowButton(text="💾  Save", accent=COLORS["gold"])
+            save = GlowButton(text="Save", accent=COLORS["gold"])
             save.bind(on_release=self._save)
-            test = GlowButton(text="🔌  Test", accent=COLORS["cyan"])
+            test = GlowButton(text="Test", accent=COLORS["cyan"])
             test.bind(on_release=self._test)
             btn_row.add_widget(save)
             btn_row.add_widget(test)
@@ -669,6 +686,156 @@ if KIVY_AVAILABLE:
             self.body.text = "\n".join(lines)
 
     # =====================================================================
+    # Optimus Prime hero screen (voice-synced glowing eyes)
+    # =====================================================================
+    class OptimusScreen(BaseScreen):
+        title = "Optimus"
+
+        def __init__(self, app_ref, **kwargs):
+            super().__init__(app_ref, **kwargs)
+            root = BoxLayout(orientation="vertical", padding=dp(10), spacing=dp(8))
+
+            head = Label(text="[b][color=2166D9]OPTIMUS[/color] [color=00E5E5]CORE[/color][/b]",
+                         markup=True, font_size="22sp", size_hint_y=None, height=dp(34),
+                         halign="center", valign="middle")
+            head.bind(size=lambda *_: setattr(head, "text_size", head.size))
+            root.add_widget(head)
+
+            self.hero = create_optimus_hero() if OPTIMUS_AVAILABLE else None
+            if self.hero is not None:
+                root.add_widget(self.hero)
+            else:
+                root.add_widget(Label(text="Optimus hero unavailable (Kivy required).",
+                                      color=COLORS["text_dim"]))
+
+            self.state_lbl = Label(text="[color=00E5E5]\u25cf[/color] Idle",
+                                   markup=True, font_size="16sp",
+                                   size_hint_y=None, height=dp(28))
+            root.add_widget(self.state_lbl)
+
+            self.transcript = Label(
+                text="Say 'Hey Rolex' or 'Hey Guru' to wake me.",
+                font_size="14sp", color=COLORS["text_dim"],
+                size_hint_y=None, height=dp(40))
+            self.transcript.bind(size=lambda *_: setattr(self.transcript, "text_size", self.transcript.size))
+            root.add_widget(self.transcript)
+
+            row = BoxLayout(size_hint_y=None, height=dp(58), spacing=dp(8))
+            listen = GlowButton(text="\ud83c\udf99  Wake & Listen", accent=COLORS["cyan"])
+            listen.bind(on_release=self._listen)
+            stop = GlowButton(text="\u23f9  Stop", accent=COLORS["autobot_red"])
+            stop.bind(on_release=self._stop)
+            row.add_widget(listen)
+            row.add_widget(stop)
+            root.add_widget(row)
+            self.add_widget(root)
+
+        def _listen(self, *_):
+            self.state_lbl.text = "[color=D4AF37]\u25cf Listening\u2026[/color]"
+            if self.hero:
+                self.hero.set_state("listening")
+            threading.Thread(target=self._listen_async, daemon=True).start()
+
+        def _listen_async(self):
+            try:
+                resp = self.app_ref.voice_turn()
+                text = resp.text if resp else "I didn't catch that."
+            except Exception as e:
+                log.error("Optimus voice error: %s", e)
+                text = "Voice input is unavailable."
+            Clock.schedule_once(lambda *_: self._done(text), 0)
+
+        def _done(self, text: str):
+            self.state_lbl.text = "[color=00E5E5]\u25cf[/color] Ready"
+            self.transcript.text = text
+            if self.hero:
+                self.hero.set_state("idle")
+
+        def _stop(self, *_):
+            try:
+                self.app_ref.voice.stop_speaking()
+            except Exception:
+                pass
+            if self.hero:
+                self.hero.set_speaking(False)
+                self.hero.set_state("idle")
+            self.state_lbl.text = "[color=00E5E5]\u25cf[/color] Idle"
+
+    # =====================================================================
+    # Capabilities screen (finance / health / device / smart-home / tools)
+    # =====================================================================
+    class CapabilitiesScreen(BaseScreen):
+        title = "Capabilities"
+
+        def __init__(self, app_ref, **kwargs):
+            super().__init__(app_ref, **kwargs)
+            root = BoxLayout(orientation="vertical", padding=dp(10), spacing=dp(8))
+
+            head = Label(text="[b][color=D4AF37]Capabilities[/color][/b]",
+                         markup=True, font_size="20sp", size_hint_y=None, height=dp(32),
+                         halign="left", valign="middle")
+            head.bind(size=lambda *_: setattr(head, "text_size", head.size))
+            root.add_widget(head)
+
+            self.body = Label(text="Loading\u2026", color=COLORS["text"], markup=True,
+                              size_hint_y=None, halign="left", valign="top")
+            self.body.bind(width=lambda *_: setattr(self.body, "text_size", (self.body.width, None)))
+            self.body.bind(texture_size=lambda *_: setattr(self.body, "height", self.body.texture_size[1]))
+            scroll = ScrollView()
+            scroll.add_widget(self.body)
+            root.add_widget(scroll)
+
+            refresh = GlowButton(text="Refresh", accent=COLORS["cyan"],
+                                 size_hint_y=None, height=dp(46))
+            refresh.bind(on_release=lambda *_: self._load())
+            root.add_widget(refresh)
+            self.add_widget(root)
+            Clock.schedule_once(lambda *_: self._load(), 0.5)
+
+        def _load(self):
+            lines = ["[b]Active capability modules[/b]", ""]
+            try:
+                from modules.tool_manager import get_tool_manager
+                from modules.package_manager import get_package_manager
+                from modules.device import get_device
+                from modules.smarthome import get_smarthome
+                from modules.messaging import get_messaging
+                from modules.finance import get_finance
+                from modules.health import get_health
+                from modules.biometrics import get_biometrics
+                from modules.emergency import get_emergency
+                from modules.remote_lab import get_remote_lab
+                from modules.coding import get_coding
+                from modules.computer_knowledge import get_computer_knowledge
+                from modules.self_tests import get_self_tests
+                from modules.recovery import get_recovery
+
+                dev = get_device().info()
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Device: {dev.get('platform')} {dev.get('machine')}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Smart-home devices: {len(get_smarthome().devices())}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Messages: {len(get_messaging().inbox())}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Expenses logged: {len(get_finance().expenses())}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Health topics: {len(get_health().topics())}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Biometrics: {'available' if get_biometrics().biometric_available() else 'unavailable'}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Emergency stop: {'ENGAGED' if get_emergency().is_engaged() else 'clear'}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Remote lab: {'running' if get_remote_lab().is_running() else 'stopped'}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Coding templates: {len(get_coding().templates())}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Computer topics: {len(get_computer_knowledge().topics())}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Known packages: {len(get_package_manager().list_known())}")
+                lines.append(f"  [color=00E5E5]\u25cf[/color] Tools registered: {len(get_tool_manager().all())}")
+                lines.append("")
+                lines.append("[b]Self-tests[/b]")
+                lines.append("  " + get_self_tests().summary().replace("\n", "\n  "))
+                lines.append("")
+                lines.append("[b]Recovery[/b]")
+                integ = get_recovery().integrity_check()
+                lines.append(f"  Integrity: {'ok' if integ.get('ok') else 'issues'}")
+                lines.append(f"  Snapshots: {len(get_recovery().snapshots())}")
+            except Exception as e:
+                lines.append(f"Capabilities unavailable: {e}")
+            self.body.text = "\n".join(lines)
+
+    # =====================================================================
     # Shell: header + screen manager + bottom nav
     # =====================================================================
     class MainShell(BoxLayout):
@@ -698,6 +865,8 @@ if KIVY_AVAILABLE:
             self.sm.add_widget(HomeScreen(app_ref, name="home"))
             self.sm.add_widget(ChatScreen(app_ref, name="chat"))
             self.sm.add_widget(VoiceScreen(app_ref, name="voice"))
+            self.sm.add_widget(OptimusScreen(app_ref, name="optimus"))
+            self.sm.add_widget(CapabilitiesScreen(app_ref, name="capabilities"))
             self.sm.add_widget(MemoryScreen(app_ref, name="memory"))
             self.sm.add_widget(TasksScreen(app_ref, name="tasks"))
             self.sm.add_widget(SettingsScreen(app_ref, name="settings"))
@@ -712,16 +881,38 @@ if KIVY_AVAILABLE:
             nav.bind(pos=lambda *_: setattr(nav._bg, "pos", nav.pos),
                      size=lambda *_: setattr(nav._bg, "size", nav.size))
             self._nav_buttons = {}
-            for label, target in [("🏠", "home"), ("💬", "chat"), ("🎙", "voice"),
-                                  ("🧠", "memory"), ("✅", "tasks"),
-                                  ("⚙", "settings"), ("🖥", "system")]:
+            for label, target in [("Home", "home"), ("Chat", "chat"), ("Voice", "voice"),
+                                  ("Optimus", "optimus"), ("Caps", "capabilities"),
+                                  ("Memory", "memory"), ("Tasks", "tasks"),
+                                  ("Setup", "settings"), ("System", "system")]:
                 b = Button(text=label, background_normal="", background_down="",
-                           background_color=COLORS["panel"], font_size="20sp")
+                           background_color=COLORS["panel"], font_size="11sp")
                 b.bind(on_release=lambda inst, t=target: self._nav(t))
                 nav.add_widget(b)
                 self._nav_buttons[target] = b
             self.add_widget(nav)
             self._nav("home")
+
+            # Poll live voice amplitude to drive the Optimus eye glow.
+            self._optimus_widgets = []
+            for scr in (self.sm.get_screen("home"), self.sm.get_screen("optimus")):
+                w = getattr(scr, "optimus", None) or getattr(scr, "hero", None)
+                if w is not None:
+                    self._optimus_widgets.append(w)
+            Clock.schedule_interval(self._sync_optimus, 1 / 30.0)
+
+        def _sync_optimus(self, *_):
+            try:
+                amp = float(getattr(self.app_ref.voice.state, "amplitude", 0.0))
+            except Exception:
+                amp = 0.0
+            speaking = amp > 0.02
+            for w in self._optimus_widgets:
+                try:
+                    w.set_amplitude(amp)
+                    w.set_speaking(speaking)
+                except Exception:
+                    pass
 
         def _nav(self, target):
             try:

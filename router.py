@@ -22,6 +22,25 @@ from modules.web import get_web
 from modules.diagnostics import get_diagnostics
 from modules.security import get_security
 from modules.policy import get_policy
+from modules.finance import get_finance, sip as fin_sip, emi as fin_emi, \
+    lumpsum as fin_lumpsum, simple_interest as fin_si, compound_interest as fin_ci, \
+    share_pnl as fin_pnl
+from modules.health import get_health
+from modules.device import get_device
+from modules.smarthome import get_smarthome
+from modules.messaging import get_messaging
+from modules.coding import get_coding
+from modules.computer_knowledge import get_computer_knowledge
+from modules.emergency import get_emergency
+from modules.recovery import get_recovery
+from modules.self_tests import get_self_tests
+from modules.knowledge_graph import get_knowledge_graph
+from modules.self_learning import get_self_learning
+from modules.tool_manager import get_tool_manager
+from modules.package_manager import get_package_manager
+from modules.remote_lab import get_remote_lab
+from modules.vision import get_vision
+from modules.parallel_ai import get_parallel_ai
 
 log = get_logger("rolex.router")
 
@@ -50,6 +69,23 @@ class Router:
         self.diagnostics = get_diagnostics()
         self.security = get_security()
         self.policy = get_policy()
+        self.finance = get_finance()
+        self.health = get_health()
+        self.device = get_device()
+        self.smarthome = get_smarthome()
+        self.messaging = get_messaging()
+        self.coding = get_coding()
+        self.computer = get_computer_knowledge()
+        self.emergency = get_emergency()
+        self.recovery = get_recovery()
+        self.self_tests = get_self_tests()
+        self.kg = get_knowledge_graph()
+        self.learning = get_self_learning()
+        self.tools = get_tool_manager()
+        self.packages = get_package_manager()
+        self.remote_lab = get_remote_lab()
+        self.vision = get_vision()
+        self.parallel_ai = get_parallel_ai()
         self._handlers: Dict[str, Callable[[str], RouteResult]] = {
             "remember": self._h_remember,
             "forget": self._h_forget,
@@ -72,6 +108,24 @@ class Router:
             "help": self._h_help,
             "providers": self._h_providers,
             "policy": self._h_policy,
+            # --- new capability handlers ---
+            "finance": self._h_finance,
+            "health": self._h_health,
+            "device": self._h_device,
+            "smarthome": self._h_smarthome,
+            "messaging": self._h_messaging,
+            "coding": self._h_coding,
+            "computer": self._h_computer,
+            "emergency": self._h_emergency,
+            "recovery": self._h_recovery,
+            "self_test": self._h_self_test,
+            "knowledge_graph": self._h_knowledge_graph,
+            "learn": self._h_learn,
+            "tools": self._h_tools,
+            "packages": self._h_packages,
+            "remote_lab": self._h_remote_lab,
+            "vision": self._h_vision,
+            "smart_select": self._h_smart_select,
         }
 
     # ------------------------------------------------------------------ #
@@ -139,6 +193,73 @@ class Router:
         # Web search
         if re.search(r"\b(search|google|look up|find online|latest news|web)\b", t):
             return "web_search"
+
+        # --- New capabilities -------------------------------------------
+        # Emergency stop (highest priority)
+        if re.search(r"\b(emergency stop|stop everything|halt|abort all|shutdown now)\b", t):
+            return "emergency"
+        # Finance
+        if re.search(r"\b(sip|mutual fund|emi|loan|interest|compound|simple interest|"
+                     r"share|stock|profit|loss|expense|spending|bill|budget|"
+                     r"invest|investment|panam|kaasu)\b", t):
+            return "finance"
+        # Health
+        if re.search(r"\b(bmi|bmr|calorie|health|symptom|medicine|doctor|fever|"
+                     r"blood pressure|sugar|diabetes|water intake|udambu|maruthuvam)\b", t):
+            return "health"
+        # Smart-home
+        if re.search(r"\b(turn on|turn off|switch on|switch off|light|fan|ac|"
+                     r"smart home|iot|scene|device state|velakku)\b", t):
+            return "smarthome"
+        # Messaging
+        if re.search(r"\b(send message|send mail|email|whatsapp|telegram|sms|"
+                     r"inbox|auto.?reply|reply to)\b", t):
+            return "messaging"
+        # Coding
+        if re.search(r"\b(explain code|review code|write code|generate code|"
+                     r"debug|snippet|function for|program for|code for)\b", t):
+            return "coding"
+        # Computer knowledge
+        if re.search(r"\b(what is a cpu|ram|gpu|operating system|motherboard|"
+                     r"how does a computer|computer knowledge|binary|compiler)\b", t):
+            return "computer"
+        # Device management
+        if re.search(r"\b(battery|vibrate|torch|flashlight|storage|device info|"
+                     r"device status|brightness)\b", t):
+            return "device"
+        # Recovery / diagnostics
+        if re.search(r"\b(backup|restore|recover|snapshot|self.?heal|integrity|"
+                     r"repair)\b", t):
+            return "recovery"
+        # Self-tests
+        if re.search(r"\b(self.?test|run tests|system test|health check|"
+                     r"diagnose yourself)\b", t):
+            return "self_test"
+        # Knowledge graph
+        if re.search(r"\b(knowledge graph|how is .* related|relationship between|"
+                     r"connect .* and|graph path)\b", t):
+            return "knowledge_graph"
+        # Self-learning
+        if re.search(r"\b(learn from|study|self.?learn|daily learning|"
+                     r"learn this|teach yourself)\b", t):
+            return "learn"
+        # Tools
+        if re.search(r"\b(tools|tool list|available tools|tool manager)\b", t):
+            return "tools"
+        # Packages
+        if re.search(r"\b(packages?|install|pip|dependencies?|module list)\b", t):
+            return "packages"
+        # Remote lab
+        if re.search(r"\b(remote lab|websocket|remote session|lab server|lab status)\b", t):
+            return "remote_lab"
+        # Vision / camera
+        if re.search(r"\b(camera|capture|take photo|scan document|ocr|"
+                     r"read image|qr code|barcode|vision)\b", t):
+            return "vision"
+        # Smart provider selection
+        if re.search(r"\b(best ai|smart select|which model|route to|"
+                     r"pick provider)\b", t):
+            return "smart_select"
 
         # System
         if re.search(r"\b(status|system status|how are you|are you online)\b", t):
@@ -416,6 +537,281 @@ class Router:
 
     def _h_policy(self, text: str) -> RouteResult:
         return RouteResult(True, "policy", self.policy.describe(), tool="policy")
+
+    # ------------------------------------------------------------------ #
+    # New capability handlers
+    # ------------------------------------------------------------------ #
+    def _h_finance(self, text: str) -> RouteResult:
+        low = text.lower()
+        nums = [float(x) for x in re.findall(r"-?\d+(?:\.\d+)?", text)]
+        try:
+            if "sip" in low and len(nums) >= 3:
+                r = fin_sip(nums[0], nums[1], nums[2])
+                return RouteResult(True, "finance",
+                                   f"SIP: invest {nums[0]:g}/mo at {nums[1]:g}% for {nums[2]:g} yrs "
+                                   f"→ ₹{r['future_value']:,.0f} (gains ₹{r['gains']:,.0f}).",
+                                   data=r, tool="finance")
+            if ("emi" in low or "loan" in low) and len(nums) >= 3:
+                r = fin_emi(nums[0], nums[1], nums[2])
+                return RouteResult(True, "finance",
+                                   f"EMI: ₹{r['emi']:,.0f}/mo for {r['months']} months "
+                                   f"(total interest ₹{r['total_interest']:,.0f}).",
+                                   data=r, tool="finance")
+            if "compound" in low and len(nums) >= 3:
+                r = fin_ci(nums[0], nums[1], nums[2])
+                return RouteResult(True, "finance", f"Compound interest result: {r}", data=r, tool="finance")
+            if "simple interest" in low and len(nums) >= 3:
+                r = fin_si(nums[0], nums[1], nums[2])
+                return RouteResult(True, "finance", f"Simple interest result: {r}", data=r, tool="finance")
+            if ("share" in low or "stock" in low or "profit" in low) and len(nums) >= 3:
+                r = fin_pnl(nums[0], nums[1], int(nums[2]))
+                return RouteResult(True, "finance", f"Share P&L: {r}", data=r, tool="finance")
+            if "spending" in low or "expense" in low:
+                r = self.finance.spending_summary()
+                return RouteResult(True, "finance",
+                                   f"Spending (last 30 days): ₹{r.get('total', 0):,.0f} across "
+                                   f"{r.get('count', 0)} entries.", data=r, tool="finance")
+            if "bill" in low:
+                bills = self.finance.bills(unpaid_only=True)
+                if not bills:
+                    return RouteResult(True, "finance", "No unpaid bills.", tool="finance")
+                lines = [f"• {b['name']}: ₹{b['amount']:,.0f}" for b in bills]
+                return RouteResult(True, "finance", "Unpaid bills:\n" + "\n".join(lines),
+                                   data={"count": len(bills)}, tool="finance")
+        except Exception as e:
+            return RouteResult(True, "finance", f"Finance calculation error: {e}", tool="finance")
+        return RouteResult(True, "finance",
+                           "Try: 'SIP 5000 12 10', 'EMI 500000 8.5 20', 'compound 10000 8 5', "
+                           "or 'my spending'.", tool="finance")
+
+    def _h_health(self, text: str) -> RouteResult:
+        low = text.lower()
+        nums = [float(x) for x in re.findall(r"-?\d+(?:\.\d+)?", text)]
+        if "bmi" in low and len(nums) >= 2:
+            r = self.health.bmi(nums[0], nums[1])
+            return RouteResult(True, "health",
+                               f"BMI: {r['bmi']} ({r['category']}). {r['disclaimer']}",
+                               data=r, tool="health")
+        if "bmr" in low and len(nums) >= 3:
+            r = self.health.bmr(nums[0], nums[1], nums[2])
+            return RouteResult(True, "health", f"BMR: {r}", data=r, tool="health")
+        if "water" in low and nums:
+            r = self.health.water_intake(nums[0])
+            return RouteResult(True, "health", f"Water intake: {r}", data=r, tool="health")
+        # Emergency red-flag check first
+        emerg = self.health.check_emergency(text)
+        if emerg.get("emergency"):
+            return RouteResult(True, "health", emerg["message"], data=emerg, tool="health")
+        topic = re.sub(r"(?i)^.*?\b(what is|about|tell me about|health|symptom)\b", "", text).strip(" :?-")
+        r = self.health.lookup(topic or text)
+        if r.get("ok"):
+            return RouteResult(True, "health", r["content"], data=r, tool="health")
+        return RouteResult(True, "health",
+                           "I can help with BMI, BMR, water intake and general health topics. "
+                           + self.health.DISCLAIMER, tool="health")
+
+    def _h_device(self, text: str) -> RouteResult:
+        low = text.lower()
+        if "battery" in low:
+            r = self.device.battery()
+            return RouteResult(True, "device", f"Battery: {r}", data=r, tool="device")
+        if "storage" in low:
+            r = self.device.storage()
+            return RouteResult(True, "device", f"Storage: {r}", data=r, tool="device")
+        if "vibrate" in low:
+            ok = self.device.vibrate()
+            return RouteResult(True, "device", "Vibrating." if ok else "Vibration unavailable.", tool="device")
+        if "torch" in low or "flashlight" in low:
+            on = "off" not in low
+            ok = self.device.set_torch(on)
+            return RouteResult(True, "device", f"Torch {'on' if on else 'off'}." if ok else "Torch unavailable.", tool="device")
+        r = self.device.info()
+        return RouteResult(True, "device",
+                           f"Device: {r.get('platform')} {r.get('machine')}, "
+                           f"{r.get('cpu_count')} CPUs, Android={r.get('android')}.",
+                           data=r, tool="device")
+
+    def _h_smarthome(self, text: str) -> RouteResult:
+        low = text.lower()
+        devices = self.smarthome.devices()
+        if not devices:
+            return RouteResult(True, "smarthome",
+                               "No smart devices registered yet. Add one with the smart-home module.",
+                               tool="smarthome")
+        target = None
+        for d in devices:
+            if d.name.lower() in low or d.id.lower() in low:
+                target = d
+                break
+        if target is None:
+            target = devices[0]
+        if "off" in low:
+            self.smarthome.turn_off(target.id)
+            return RouteResult(True, "smarthome", f"Turned off {target.name}.", tool="smarthome")
+        if "on" in low:
+            self.smarthome.turn_on(target.id)
+            return RouteResult(True, "smarthome", f"Turned on {target.name}.", tool="smarthome")
+        lines = [f"• {d.name} [{d.kind}] = {d.state}" for d in devices]
+        return RouteResult(True, "smarthome", "Smart devices:\n" + "\n".join(lines),
+                           data={"count": len(devices)}, tool="smarthome")
+
+    def _h_messaging(self, text: str) -> RouteResult:
+        low = text.lower()
+        if "inbox" in low:
+            msgs = self.messaging.inbox()
+            if not msgs:
+                return RouteResult(True, "messaging", "Inbox is empty.", tool="messaging")
+            lines = [f"• [{m.get('channel')}] {m.get('sender')}: {m.get('body')}" for m in msgs[:10]]
+            return RouteResult(True, "messaging", "Inbox:\n" + "\n".join(lines),
+                               data={"count": len(msgs)}, tool="messaging")
+        if "auto" in low and "reply" in low:
+            rules = self.messaging.rules()
+            return RouteResult(True, "messaging", f"Auto-reply rules: {len(rules)} active.", tool="messaging")
+        # send message <channel> <to> <body>
+        m = re.search(r"(?i)send (?:message|mail|email)?\s*(?:to\s+)?(\S+)\s+(.+)", text)
+        if m:
+            to, body = m.group(1), m.group(2)
+            r = self.messaging.send(to, body)
+            return RouteResult(True, "messaging", f"Message to {to}: {'sent' if r.get('ok') else r.get('error')}",
+                               data=r, tool="messaging")
+        return RouteResult(True, "messaging",
+                           "Try: 'send message to Sabari hello', 'inbox', or 'auto reply status'.",
+                           tool="messaging")
+
+    def _h_coding(self, text: str) -> RouteResult:
+        low = text.lower()
+        if "explain" in low:
+            code = re.sub(r"(?i)^.*?\b(explain code|explain)\b", "", text).strip(" :")
+            r = self.coding.explain_code(code or text)
+            return RouteResult(True, "coding", r.get("summary", str(r)), data=r, tool="coding")
+        if "review" in low:
+            code = re.sub(r"(?i)^.*?\b(review code|review)\b", "", text).strip(" :")
+            r = self.coding.review_code(code or text)
+            return RouteResult(True, "coding", r.get("summary", str(r)), data=r, tool="coding")
+        if "template" in low or "templates" in low:
+            t = self.coding.templates()
+            return RouteResult(True, "coding", "Templates: " + ", ".join(t.keys()), tool="coding")
+        lang = self.coding.detect_language(text)
+        return RouteResult(True, "coding",
+                           f"Detected language: {lang}. Ask me to 'explain code', 'review code', "
+                           "or 'write code for ...'.", tool="coding")
+
+    def _h_computer(self, text: str) -> RouteResult:
+        topic = re.sub(r"(?i)^.*?\b(what is|about|tell me about|how does)\b", "", text).strip(" :?")
+        r = self.computer.lookup(topic or text)
+        if r.get("ok"):
+            title = r.get("title", "")
+            body = r.get("body", r.get("content", ""))
+            return RouteResult(True, "computer", f"{title}: {body}", data=r, tool="computer")
+        return RouteResult(True, "computer",
+                           "Computer topics I know: " + ", ".join(self.computer.topics()), tool="computer")
+
+    def _h_emergency(self, text: str) -> RouteResult:
+        low = text.lower()
+        if "release" in low or "resume" in low or "cancel" in low:
+            self.emergency.release()
+            return RouteResult(True, "emergency", "Emergency stop released. Systems resumed.", tool="emergency")
+        self.emergency.engage(reason=text[:80])
+        return RouteResult(True, "emergency",
+                           "EMERGENCY STOP engaged. All autonomous actions halted. "
+                           "Say 'release emergency stop' to resume.", tool="emergency")
+
+    def _h_recovery(self, text: str) -> RouteResult:
+        low = text.lower()
+        if "backup" in low or "snapshot" in low:
+            r = self.recovery.snapshot()
+            return RouteResult(True, "recovery",
+                               f"Snapshot created: {r.get('label')}" if r.get("ok") else f"Failed: {r.get('error')}",
+                               data=r, tool="recovery")
+        if "restore" in low:
+            snaps = self.recovery.snapshots()
+            if not snaps:
+                return RouteResult(True, "recovery", "No snapshots available to restore.", tool="recovery")
+            r = self.recovery.restore_snapshot(snaps[0]["label"])
+            return RouteResult(True, "recovery",
+                               f"Restored snapshot {snaps[0]['label']}." if r.get("ok") else f"Failed: {r.get('error')}",
+                               data=r, tool="recovery")
+        if "self" in low and "heal" in low:
+            r = self.recovery.self_heal()
+            return RouteResult(True, "recovery",
+                               "Self-heal complete. Actions: " + (", ".join(r["actions"]) or "none"),
+                               data=r, tool="recovery")
+        r = self.recovery.integrity_check()
+        return RouteResult(True, "recovery",
+                           f"Integrity: {'ok' if r.get('ok') else 'issues: ' + ', '.join(r.get('issues', []))}",
+                           data=r, tool="recovery")
+
+    def _h_self_test(self, text: str) -> RouteResult:
+        r = self.self_tests.run_all()
+        return RouteResult(True, "self_test", self.self_tests.summary(), data=r, tool="self_tests")
+
+    def _h_knowledge_graph(self, text: str) -> RouteResult:
+        m = re.search(r"(?i)(?:between|connect)\s+(\w+)\s+(?:and|to)\s+(\w+)", text)
+        if m:
+            path = self.kg.path(m.group(1), m.group(2))
+            if path:
+                return RouteResult(True, "knowledge_graph", " → ".join(path), data={"path": path}, tool="knowledge_graph")
+            return RouteResult(True, "knowledge_graph", "No path found between those nodes.", tool="knowledge_graph")
+        stats = self.kg.stats()
+        return RouteResult(True, "knowledge_graph",
+                           f"Knowledge graph: {stats.get('nodes', 0)} nodes, {stats.get('edges', 0)} edges.",
+                           data=stats, tool="knowledge_graph")
+
+    def _h_learn(self, text: str) -> RouteResult:
+        content = re.sub(r"(?i)^.*?\b(learn from|study|self.?learn|daily learning|learn this|teach yourself)\b",
+                         "", text).strip(" :,-")
+        if not content:
+            r = self.learning.daily_learning_cycle()
+            return RouteResult(True, "learn", f"Daily learning cycle complete: {r}", data=r, tool="self_learning")
+        r = self.learning.learn_from_text(content)
+        return RouteResult(True, "learn", f"Learned {r.get('facts', 0)} fact(s) from that.", data=r, tool="self_learning")
+
+    def _h_tools(self, text: str) -> RouteResult:
+        return RouteResult(True, "tools", self.tools.summary(), data=self.tools.manifest(), tool="tool_manager")
+
+    def _h_packages(self, text: str) -> RouteResult:
+        known = self.packages.list_known()
+        installed = self.packages.list_installed()
+        return RouteResult(True, "packages",
+                           f"Known packages: {len(known)} | Installed: {len(installed)}.",
+                           data={"known": known, "installed": installed}, tool="package_manager")
+
+    def _h_remote_lab(self, text: str) -> RouteResult:
+        low = text.lower()
+        if "start" in low:
+            r = self.remote_lab.start()
+            return RouteResult(True, "remote_lab", f"Remote lab started: {r}", data=r, tool="remote_lab")
+        if "stop" in low:
+            self.remote_lab.stop()
+            return RouteResult(True, "remote_lab", "Remote lab stopped.", tool="remote_lab")
+        return RouteResult(True, "remote_lab",
+                           f"Remote lab is {'running' if self.remote_lab.is_running() else 'stopped'}.",
+                           tool="remote_lab")
+
+    def _h_vision(self, text: str) -> RouteResult:
+        low = text.lower()
+        if "capture" in low or "take photo" in low or "take a photo" in low:
+            r = self.vision.capture()
+            return RouteResult(True, "vision",
+                               f"Captured: {r.get('path')}" if r.get("ok") else f"Capture failed: {r.get('error')}",
+                               data=r, tool="vision")
+        m = re.search(r"[\w\-/\\\.]+\.(jpg|jpeg|png|webp|bmp)", text, re.I)
+        if m:
+            r = self.vision.scan_document(m.group(0))
+            return RouteResult(True, "vision",
+                               f"Scanned {m.group(0)}: {r.get('word_count', 0)} words.",
+                               data=r, tool="vision")
+        return RouteResult(True, "vision",
+                           f"Camera available: {self.vision.camera_available()}. "
+                           "Say 'capture photo' or give an image path to scan.", tool="vision")
+
+    def _h_smart_select(self, text: str) -> RouteResult:
+        task = re.sub(r"(?i)^.*?\b(best ai|smart select|which model|route to|pick provider)\b",
+                      "", text).strip(" :,-")
+        task = re.sub(r"(?i)^(for|to)\s+", "", task).strip() or "chat"
+        choice = self.parallel_ai.select_smart(task)
+        return RouteResult(True, "smart_select",
+                           f"Best provider for '{task}': {choice}", data={"provider": choice}, tool="parallel_ai")
 
     # ------------------------------------------------------------------ #
     # Helpers

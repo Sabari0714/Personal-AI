@@ -48,6 +48,14 @@ COLORS = {
     "overlay":       (0.0, 0.0, 0.0, 0.55),
     "white":         (1, 1, 1, 1),
     "black":         (0, 0, 0, 1),
+
+    # --- Autobots theme accents -------------------------------------------
+    "autobot_blue":  (0.129, 0.400, 0.850, 1),   # #2166D9 Optimus blue
+    "autobot_red":   (0.850, 0.180, 0.180, 1),   # #D92E2E Autobot red
+    "energy":        (0.400, 0.900, 1.000, 1),   # #66E6FF energon glow
+    "energon":       (0.600, 0.300, 0.950, 1),   # #994CFF energon violet
+    "steel":         (0.560, 0.620, 0.700, 1),   # #8F9EB3 metallic
+    "hud":           (0.000, 0.898, 0.898, 0.85),
 }
 
 FONT = "Roboto"
@@ -61,6 +69,16 @@ ACCENT_GRADIENT = [
     (0.831, 0.686, 0.216, 1),   # gold
     (0.000, 0.898, 0.898, 1),   # cyan
 ]
+
+# Autobots energon gradient (blue -> cyan -> violet) for hero/HUD elements
+ENERGON_GRADIENT = [
+    (0.129, 0.400, 0.850, 1),   # autobot blue
+    (0.400, 0.900, 1.000, 1),   # energy cyan
+    (0.600, 0.300, 0.950, 1),   # energon violet
+]
+
+# HUD scanline / grid colour
+HUD_GRID = (0.000, 0.898, 0.898, 0.10)
 
 
 # ---------------------------------------------------------------------------

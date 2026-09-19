@@ -68,6 +68,66 @@ independently testable module.
 
 ---
 
+## What's New in v1.1 — Voice Fix + Full Capability Build
+
+This release fixes the reported **voice input/output bug** and adds a large set
+of new capabilities, all local-first and gracefully degrading when optional
+dependencies are missing.
+
+### 🎙 Voice (fixed)
+- **Platform-aware voice facade** (`modules/voice.py`) that auto-selects the
+  right backend: native Android TTS/STT via `pyjnius` (`modules/voice_android.py`)
+  or desktop `pyttsx3` + `SpeechRecognition` (`modules/voice_desktop.py`).
+- **Wake words:** "Hey Rolex" and "Hey Guru" (plus bare "rolex"/"guru").
+- **Live amplitude** (`VoiceState.amplitude`, 0..1) exposed for UI animation.
+
+### 🤖 Futuristic Autobots UI
+- **Optimus Prime hero** (`gui/optimus.py`) rendered in the center of the app,
+  with **eyes that glow in sync with the voice bass** — the eye bloom, aura
+  rings and ground glow all react to the live voice amplitude.
+- New **Optimus Core** screen and **Capabilities** dashboard.
+- Expanded Autobots palette (autobot blue, energon violet, energy cyan).
+
+### 🧠 Intelligence & Learning
+- `modules/knowledge_graph.py` — SQLite knowledge graph with BFS path finding.
+- `modules/self_learning.py` — daily learning cycle + fact mining.
+- `modules/sandbox.py` — AST policy guard + subprocess sandbox.
+- `modules/self_modify.py` — propose → test → apply → rollback self-modification.
+- Smart provider selection in `modules/parallel_ai.py`.
+- Short + long-term memory in `modules/memory.py`.
+
+### 🧰 Capability Modules
+| Module | Capability |
+|--------|-----------|
+| `modules/tool_manager.py` | Register/invoke tools with approval + audit |
+| `modules/package_manager.py` | Controlled, dry-run package management |
+| `modules/device.py` | Battery, storage, vibrate, torch, device info |
+| `modules/smarthome.py` | Smart-home / IoT devices, scenes, drivers |
+| `modules/messaging.py` | Messaging/social + mail with auto-reply rules |
+| `modules/finance.py` | SIP, lumpsum, EMI, interest, share P&L, expenses, bills |
+| `modules/health.py` | BMI, BMR, water intake, curated health topics, red-flag triage |
+| `modules/biometrics.py` | Fingerprint / face auth (PBKDF2 secrets) |
+| `modules/emergency.py` | Emergency stop (engage/release) |
+| `modules/remote_lab.py` | Minimal stdlib WebSocket remote lab |
+| `modules/coding.py` | Detect/explain/review code, templates |
+| `modules/computer_knowledge.py` | Offline computer knowledge base |
+| `modules/self_tests.py` | Automated self-test suite |
+| `modules/recovery.py` | Snapshots, integrity checks, self-heal |
+| `modules/vision.py` | Camera capture + OCR + document scan |
+
+### 🗣 New voice/chat commands
+```
+SIP 5000 12 10            EMI 500000 8.5 20        compound 10000 8 5
+my spending               bmi 70 1.75              device info / battery
+turn on light             inbox                    send message to Sabari hi
+explain code <code>       what is a cpu            backup now
+run self test             knowledge graph stats    daily learning
+available tools           list packages            remote lab status
+capture photo             best ai for coding       emergency stop
+```
+
+---
+
 ## Architecture
 
 ```
