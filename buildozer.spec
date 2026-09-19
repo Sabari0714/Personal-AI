@@ -6,8 +6,8 @@ package.domain = org.rolexai
 
 source.dir = .
 source.include_exts = py,png,jpg,jpeg,kv,atlas,json,txt,md,csv,ttf,otf
-source.exclude_dirs = tests,bin,.git,__pycache__,data/backups,logs,build
-source.exclude_patterns = .env,*.db,*.db-wal,*.db-shm,*.apk
+source.exclude_dirs = tests,bin,.git,__pycache__,data/backups,logs,build,apk_out,.pytest_cache,.github
+source.exclude_patterns = .env,*.db,*.db-wal,*.db-shm,*.apk,todo.md,*.log,gui_*.png,rolex_*.png
 
 version = 1.1.0
 
