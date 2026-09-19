@@ -348,10 +348,35 @@ def output_rpm(input_rpm: float, driver_teeth: float, driven_teeth: float) -> fl
 # ---------------------------------------------------------------------------
 # High-level natural-language math handler
 # ---------------------------------------------------------------------------
-def solve(expression: str) -> str:
-    """Best-effort natural language math solver. Returns a human string."""
+def solve(expression: str, steps: bool = True) -> str:
+    """
+    Best-effort natural language math solver. Returns a human string.
+
+    When ``steps`` is True, tries the step-by-step solver first (equations,
+    statistics, finance, number theory) and falls back to plain evaluation.
+    """
+    expr = (expression or "").strip()
+    if not expr:
+        return "Math error: empty expression."
+
+    if steps:
+        try:
+            from modules.math_solver import solve_auto, solve_arithmetic, SolveError
+            auto = solve_auto(expr)
+            if auto is not None:
+                return auto.render()
+            # Plain arithmetic with an explanation.
+            if re.search(r"[0-9]", expr) and re.search(r"[+\-*/^%×÷]", expr):
+                try:
+                    sol = solve_arithmetic(expr)
+                    return sol.render()
+                except SolveError:
+                    pass
+        except Exception as e:
+            log.debug("Step solver skipped: %s", e)
+
     try:
-        result = evaluate(expression)
+        result = evaluate(expr)
         if isinstance(result, float) and result.is_integer():
             result = int(result)
         return f"Result: {result}"

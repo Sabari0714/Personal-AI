@@ -1,0 +1,94 @@
+Manifest-Version: 1.0
+Built-By: Signflinger
+Created-By: Android Gradle 8.1.1
+
+Name: AndroidManifest.xml
+SHA-256-Digest: 2XRza7REfdiBJOc66GpCRb5OBEodiKPtP53ZyCrInkM=
+
+Name: META-INF/com/android/build/gradle/app-metadata.properties
+SHA-256-Digest: EOyGcpF1Eary5NIofJjO9CGhKmeFjO/WYttu1Eo85o0=
+
+Name: assets/private.tar
+SHA-256-Digest: 4QuDMcH2ianSlLu/EPa7z/z5xLRpZ9UVNM8qMB6lCBc=
+
+Name: classes.dex
+SHA-256-Digest: sElq5j5my1ilD9E5YAgf2RS9inq70UtpXYa+lWLF51k=
+
+Name: classes2.dex
+SHA-256-Digest: eD4ZhjQeX4ObxXflzgY97dSlILdNvECmEwbtMhW+CNM=
+
+Name: classes3.dex
+SHA-256-Digest: sqqiFHXAyPzWfD3AY7AEN+7iQ/29SEHcl4lOVpYQpyo=
+
+Name: classes4.dex
+SHA-256-Digest: LKzWDr6Z+0rYYkxiUR3Mx0yRBMr0H+UMmD68IGIBF/E=
+
+Name: classes5.dex
+SHA-256-Digest: y8Hzp4uDJ2TAq7S+huwzA0ZiQhvfdUSDp3yssXvU3J0=
+
+Name: lib/arm64-v8a/libSDL2.so
+SHA-256-Digest: SWOyarzv/zeRPYlwTKBe9p7fRX74o9oh0ONi/LX8Zvg=
+
+Name: lib/arm64-v8a/libSDL2_image.so
+SHA-256-Digest: G8RESB+NAUqvAdQucUgs5i8K7IADPifT6IMcRCTOnIQ=
+
+Name: lib/arm64-v8a/libSDL2_mixer.so
+SHA-256-Digest: JlUO0dBN8hhfGjw1+bIkgUrtim8BVIpGJI1TUUyycb8=
+
+Name: lib/arm64-v8a/libSDL2_ttf.so
+SHA-256-Digest: T8ctnfE/aPuuYoPL/9Uucxoqdt239Ali4hJHaOBY7t4=
+
+Name: lib/arm64-v8a/libcrypto1.1.so
+SHA-256-Digest: m76rWS1e8qFPbzP6unlGbHxDwnLRaK5EXuXkvwFlXkA=
+
+Name: lib/arm64-v8a/libffi.so
+SHA-256-Digest: 5EfqljoHhwZ5koXJGmLcEJmZj7TVrfHsT5e9bHD9imY=
+
+Name: lib/arm64-v8a/libmain.so
+SHA-256-Digest: oPAvEaCm+fisYr0OFThoI42FK3Hd6QCy7yxE+9HYBqA=
+
+Name: lib/arm64-v8a/libpybundle.so
+SHA-256-Digest: sio4KsVCl4TgZCEHRlUUSEJugpytwIUoawp8s1llL1M=
+
+Name: lib/arm64-v8a/libpython3.11.so
+SHA-256-Digest: fVhq+kO+3BFo2PPM3gL0X7q4QQOSco5JqOCJEZ52YDo=
+
+Name: lib/arm64-v8a/libsqlite3.so
+SHA-256-Digest: nmTOKu+b1X+/mJWEsXy6aokYEyp9Te99TD/ZYuRjpQc=
+
+Name: lib/arm64-v8a/libssl1.1.so
+SHA-256-Digest: yE1Y8KOtBOw5hfsQta+FMJJmFNwG/lzVq+hz+Wqfd8Q=
+
+Name: res/drawable-hdpi-v4/ic_launcher.png
+SHA-256-Digest: gIUcRtMYsM7cUbtNYJWtUdwWYp6lkO59X7rFsVw827s=
+
+Name: res/drawable-mdpi-v4/ic_launcher.png
+SHA-256-Digest: 8Cthau2vIRaLZyn5HXiIBYMU/8P2vsHBB5XaKO1ww1c=
+
+Name: res/drawable-xhdpi-v4/ic_launcher.png
+SHA-256-Digest: pDVQm7ED6lNeOBn6ZZINnmydxp0FBkHu2H22VaqU/vs=
+
+Name: res/drawable-xxhdpi-v4/ic_launcher.png
+SHA-256-Digest: 4VAhhQSSEQJayUKNpx6tIJ2qW976aXUFOocNDkLFoYw=
+
+Name: res/drawable/presplash.jpg
+SHA-256-Digest: 3InVeX2gXrzFXAPNVvXm6t6YVY675bBj700DELQ1m3o=
+
+Name: res/layout/chooser_item.xml
+SHA-256-Digest: g9QQ3IC9GUcUiQJV4Ddwr/qon6YZUj5WpP6YlKIAFrk=
+
+Name: res/layout/main.xml
+SHA-256-Digest: UKSQT5TQf3uqxhTofLi3KtZvgobyMOW96wyx56jCUZc=
+
+Name: res/layout/project_chooser.xml
+SHA-256-Digest: 1tdzgSahHjHJFA6vc1jEnPiMKeheIXst9dp1s4ZQwzA=
+
+Name: res/layout/project_empty.xml
+SHA-256-Digest: vkyEEyroYJPvld7lKFIlIjf2RrLgKQcBOkeddZZdBoM=
+
+Name: res/mipmap/icon.png
+SHA-256-Digest: UrIURFnhRcLn4AhtwTwL3gFh4ADI2x2N/B9tnoc/icQ=
+
+Name: resources.arsc
+SHA-256-Digest: wAdoMF0fC9CocG+w2dSrUuhyQYgYKHft1zqtUUJkNcI=
+

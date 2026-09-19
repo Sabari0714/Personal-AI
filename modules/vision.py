@@ -1,22 +1,50 @@
 """
 ROLEX AI — Vision / Camera
-Local-first image analysis, OCR, barcode/QR detection, document scanning.
-Optional dependencies degrade gracefully.
+Local-first image analysis, OCR, barcode/QR detection, document scanning and
+camera capture (Android via pyjnius, desktop via OpenCV/PIL). Optional
+dependencies degrade gracefully.
 """
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import Dict, Optional
 
+from config import DATA_DIR
 from modules.logger import get_logger
 
 log = get_logger("rolex.vision")
+
+CAPTURE_DIR = DATA_DIR / "captures"
+
+
+def _is_android() -> bool:
+    """Detect Android without importing Kivy.
+
+    Importing ``kivy.utils`` pulls in Kivy's argument parser, which hijacks
+    CLI flags (e.g. ``main.py --status``). We therefore probe the environment
+    and the p4a-provided ``android`` module instead.
+    """
+    import os
+    if "ANDROID_ARGUMENT" in os.environ or "ANDROID_PRIVATE" in os.environ:
+        return True
+    if "ANDROID_ROOT" in os.environ and "ANDROID_DATA" in os.environ:
+        return True
+    try:
+        import android  # noqa: F401  (python-for-android provides this)
+        return True
+    except Exception:
+        return False
 
 
 class VisionEngine:
     def __init__(self):
         self._ocr_available = self._check_ocr()
+        CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
 
+    # ------------------------------------------------------------------ #
+    # Capability probes
+    # ------------------------------------------------------------------ #
     @staticmethod
     def _check_ocr() -> bool:
         try:
@@ -29,6 +57,67 @@ class VisionEngine:
     def ocr_available(self) -> bool:
         return self._ocr_available
 
+    def camera_available(self) -> bool:
+        if _is_android():
+            try:
+                from jnius import autoclass  # type: ignore  # noqa: F401
+                return True
+            except Exception:
+                return False
+        try:
+            import cv2  # type: ignore  # noqa: F401
+            return True
+        except Exception:
+            return False
+
+    # ------------------------------------------------------------------ #
+    # Camera capture
+    # ------------------------------------------------------------------ #
+    def capture(self, filename: Optional[str] = None) -> Dict:
+        """Capture a still image from the device camera.
+
+        Android: uses the native Camera intent via pyjnius.
+        Desktop: uses OpenCV VideoCapture (first frame).
+        """
+        filename = filename or f"capture_{int(time.time())}.jpg"
+        dest = CAPTURE_DIR / filename
+        if _is_android():
+            return self._capture_android(dest)
+        return self._capture_desktop(dest)
+
+    def _capture_android(self, dest: Path) -> Dict:
+        try:
+            from jnius import autoclass  # type: ignore
+            PythonActivity = autoclass("org.kivy.android.PythonActivity")
+            Intent = autoclass("android.content.Intent")
+            MediaStore = autoclass("android.provider.MediaStore")
+            activity_obj = PythonActivity.mActivity
+            intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            activity_obj.startActivity(intent)
+            return {"ok": True, "path": str(dest),
+                    "note": "Android camera intent launched; image saved by system."}
+        except Exception as e:
+            log.error("Android capture failed: %s", e)
+            return {"ok": False, "error": str(e)}
+
+    def _capture_desktop(self, dest: Path) -> Dict:
+        try:
+            import cv2  # type: ignore
+            cam = cv2.VideoCapture(0)
+            if not cam.isOpened():
+                return {"ok": False, "error": "No camera device found."}
+            ok, frame = cam.read()
+            cam.release()
+            if not ok:
+                return {"ok": False, "error": "Failed to read frame."}
+            cv2.imwrite(str(dest), frame)
+            return {"ok": True, "path": str(dest)}
+        except Exception as e:
+            return {"ok": False, "error": f"Camera capture requires 'opencv-python'. ({e})"}
+
+    # ------------------------------------------------------------------ #
+    # Analysis
+    # ------------------------------------------------------------------ #
     def extract_text(self, image_path: str) -> Dict:
         p = Path(image_path)
         if not p.exists():
@@ -61,7 +150,7 @@ class VisionEngine:
         return info
 
     def detect_qr(self, image_path: str) -> Dict:
-        """QR/barcode detection placeholder (requires optional libs)."""
+        """QR/barcode detection (requires optional 'pyzbar')."""
         try:
             from pyzbar.pyzbar import decode  # type: ignore
             from PIL import Image  # type: ignore
@@ -69,6 +158,15 @@ class VisionEngine:
             return {"ok": True, "codes": [c.data.decode("utf-8", "ignore") for c in codes]}
         except Exception as e:
             return {"ok": False, "error": f"QR detection requires 'pyzbar'. ({e})"}
+
+    def scan_document(self, image_path: str) -> Dict:
+        """Document scan: OCR + basic metadata, ready for the documents module."""
+        result = self.analyze(image_path)
+        if result.get("ok") and self._ocr_available:
+            text = result.get("ocr", {}).get("text", "")
+            result["document_text"] = text
+            result["word_count"] = len(text.split())
+        return result
 
 
 _vision: Optional[VisionEngine] = None

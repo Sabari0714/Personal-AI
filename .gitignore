@@ -5,6 +5,9 @@
 *.db-shm
 data/*.db
 data/backups/
+data/recovery/
+data/settings.json
+data/captures/
 logs/
 build/
 dist/
