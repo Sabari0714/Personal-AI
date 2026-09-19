@@ -50,3 +50,13 @@
 ## 7. Verification & Delivery
 - [x] Run tests / smoke checks (85 pytest pass, capability + router + GUI smoke pass, GUI renders verified)
 - [x] Push branch + open PR on GitHub (PR #1: feat/voice-fix-autobots-upgrade)
+
+## 8. APK Build & Delivery
+- [x] Diagnose Android build toolchain (no local SDK/NDK; use GitHub Actions)
+- [x] Fix Kivy arg-parser hijack in vision._is_android (unblocks CI smoke test)
+- [x] Fix buildozer.spec: remove unsupported android.features (p4a v2024.01.21)
+- [x] Build APK via GitHub Actions (run 35419813751) — SUCCESS
+- [x] Download + verify APK (22.7MB, signed, 22 permissions, all modules bundled)
+- [x] Trim screenshot/dev bloat from APK bundle
+- [x] Final clean APK build (run 35420408344) — SUCCESS (21.3MB)
+- [x] Deliver APK to user
