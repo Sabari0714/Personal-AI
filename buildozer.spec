@@ -9,7 +9,7 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,json,txt,md,csv,ttf,otf
 source.exclude_dirs = tests,bin,.git,__pycache__,data/backups,logs,build
 source.exclude_patterns = .env,*.db,*.db-wal,*.db-shm,*.apk
 
-version = 1.0.0
+version = 1.1.0
 
 # Requirements — validated against python-for-android / NDK combination
 requirements = python3,kivy,pyjnius,android,plyer,requests,urllib3,chardet,idna,certifi

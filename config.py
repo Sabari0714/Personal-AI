@@ -87,7 +87,7 @@ def _env_float(key: str, default: float) -> float:
 class RolexConfig:
     # Identity
     app_name: str = "ROLEX AI"
-    version: str = "1.0.0"
+    version: str = "1.1.0"
     codename: str = "Rolex"
 
     # Policy

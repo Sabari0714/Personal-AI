@@ -19,9 +19,20 @@ CAPTURE_DIR = DATA_DIR / "captures"
 
 
 def _is_android() -> bool:
+    """Detect Android without importing Kivy.
+
+    Importing ``kivy.utils`` pulls in Kivy's argument parser, which hijacks
+    CLI flags (e.g. ``main.py --status``). We therefore probe the environment
+    and the p4a-provided ``android`` module instead.
+    """
+    import os
+    if "ANDROID_ARGUMENT" in os.environ or "ANDROID_PRIVATE" in os.environ:
+        return True
+    if "ANDROID_ROOT" in os.environ and "ANDROID_DATA" in os.environ:
+        return True
     try:
-        from kivy.utils import platform  # type: ignore
-        return platform == "android"
+        import android  # noqa: F401  (python-for-android provides this)
+        return True
     except Exception:
         return False
 

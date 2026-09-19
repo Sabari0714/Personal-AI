@@ -49,4 +49,4 @@
 
 ## 7. Verification & Delivery
 - [x] Run tests / smoke checks (85 pytest pass, capability + router + GUI smoke pass, GUI renders verified)
-- [ ] Push branch + open PR on GitHub
+- [x] Push branch + open PR on GitHub (PR #1: feat/voice-fix-autobots-upgrade)
